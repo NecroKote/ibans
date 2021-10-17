@@ -1,0 +1,19 @@
+# ide realted
+/.vscode
+
+# macos
+**/.DS_Store
+
+# python venv
+/.venv
+
+# python precompiled files
+**/__pycache__
+**/*.pyc
+
+# pytest cache
+/.pytest_cache
+
+# pytest-cov cache
+.coverage
+/htmlcov

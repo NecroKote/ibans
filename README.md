@@ -15,6 +15,21 @@ Only the basic IBAN check numbers are validated. but it's possible to add countr
 % poetry install
 ```
 
+# Testing
+
+`poetry` installs everything necessery to run tests with coverage.
+
+```
+% poetry run pytest --cov --cov-report=html
+```
+
+or use `Makefile`'s target:
+```
+% make test
+```
+
+To inspect code coverage, open `index.html` file located in `htmlcov` folder
+
 # Running
 
 The same `poetry` could be used to launch the server locally
@@ -22,6 +37,11 @@ The same `poetry` could be used to launch the server locally
 % poetry run python ibans
 
 [2021-10-17 12:46:36 +0300] [4264] [INFO] Running on http://127.0.0.1:8000 (CTRL + C to quit)
+```
+
+or use `Makefile`'s target:
+```
+% make run
 ```
 
 # API Documentation
@@ -36,6 +56,11 @@ For example building and running locally, using `Docker`
 ```
 % docker build -t ibans .
 % docker run --rm -it -p 8000:8000 ibans
+```
+
+or use `Makefile`'s target:
+```
+% make docker
 ```
 
 Ideally, this service should be placed behind a proxy server, configured to cache responses

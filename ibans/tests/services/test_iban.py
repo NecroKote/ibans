@@ -62,9 +62,10 @@ def test_expected_results(ibans: IBANService, number):
     [
         ("ABC", "should have at least"),
         ("Z" * 35, "no more that 34"),
-        ("AZ00---------", "length mismatch"),
+        ("AZ00---------", "non alpha-numerical"),
         ("EE43 BOMM 0101 1234 5678 9101 000 MUR", "length mismatch"),
         ("EE38 2200 2210 2014 5687", "check digits mismatch"),
+        ("AL34XXXXXXXXXXXXXXXXXXXXXXXX", "non-digit"),
     ],
 )
 def test_malformed_inputs(ibans: IBANService, case):
@@ -77,7 +78,7 @@ def test_malformed_inputs(ibans: IBANService, case):
 
 
 def test_unknown_country(ibans: IBANService):
-    number = "NN00----00001111----0000"
+    number = "NN00XXXX00001111YYYY0000"
 
     with pytest.raises(CountryLookupError, match="`NN` is unknown to this service"):
         ibans.validate_iban(number)

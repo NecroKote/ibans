@@ -36,7 +36,7 @@ class IBANService:
         return re.sub(r"\s", "", inp)
 
     def _validate_iban_checksum(self, iban: str) -> bool:
-        """performs checsum validation of a normalized IBAN"""
+        """performs checksum validation of a normalized IBAN"""
 
         # 1. rearrange 4 characters at the start
         number = iban[4:] + iban[:4]
@@ -67,6 +67,9 @@ class IBANService:
             raise IBANValidationError(
                 inp, "valid IBAN must have no more that 34 characters"
             )
+
+        elif not inp.isalnum():
+            raise IBANValidationError(inp, "IBAN contains non alpha-numerical symbols")
 
         # validate country
         country_a2 = inp[:2].upper()

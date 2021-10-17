@@ -1,7 +1,7 @@
 from typing import Iterable, Callable, Tuple
 
 
-DigitExtractor = Callable[[str], slice]
+DigitExtractor = Callable[[str], str]
 ReminderTransformer = Callable[[int], Tuple[bool, int]]
 
 IdentityTransformer = lambda x: (False, x)
@@ -29,6 +29,9 @@ class WeightedSumValidationRule:
 
     def __call__(self, value: str):
         check_target = self.get_src(value)
+        if not check_target.isnumeric():
+            raise ValueError("non-digit input within checked region")
+
         numbers = (int(x) for x in check_target)
 
         # weighted sum

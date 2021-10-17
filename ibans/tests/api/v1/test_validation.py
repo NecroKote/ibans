@@ -20,8 +20,8 @@ FAILING_NUMBERS = (
     ("AZXX NABZ 0135 0100 0000 0000 7944", "check digits mismatch"),
     ("ABC", "should have at least"),
     ("Z" * 35, "no more that 34"),
-    ("NN00----00001111----0000", "is unknown to this service"),
-    ("AZ00---------", "length mismatch"),
+    ("NN00XXXX00001111YYYY0000", "is unknown to this service"),
+    ("AZ00---------", "non alpha-numerical"),
     ("EE38 2200 2210 2014 5687", "check digits mismatch"),
 )
 

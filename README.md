@@ -27,3 +27,16 @@ The same `poetry` could be used to launch the server locally
 # API Documentation
 
 API documentation available at runtime [http://localhost:8000/docs](http://localhost:8000/docs)
+
+# Deployment
+
+If required, this service may be deployed to any cloud service provider that supports running OCI containers.
+For example building and running locally, using `Docker`
+
+```
+% docker build -t ibans .
+% docker run --rm -it -p 8000:8000 ibans
+```
+
+Ideally, this service should be placed behind a proxy server, configured to cache responses
+with respect to query parameters

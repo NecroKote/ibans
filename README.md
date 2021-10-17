@@ -4,11 +4,14 @@ simple IBAN validation API. provides both GET and POST based endpoints
 
 ## Limitations
 
-Only the basic IBAN check numbers are validated. but it's possible to add country-based validation
+At the moment (17-Oct-2021), service is aware of 79 countries. For majority of it, only the IBAN check digits are validated.
+
+As an example of possible architecture expansion, Albania (AL) and Hungary (HU) have additional country digit checks.
 
 # Installation
+`python` of version `3.7` and above is required for this project.
 
-`poetry` is required for dependency installation and to run this project
+Additionally, tool called `poetry` is required for noth dependency installation and running this project
 
 ```
 % pip install --user poetry

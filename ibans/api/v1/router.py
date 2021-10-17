@@ -18,8 +18,9 @@ log = logging.getLogger("api.v1")
     "/iban/is_valid",
     response_model=IBANValidationResponseV1,
     tags=["iban"],
+    summary="GET-based validator",
 )
-def simple_iban_validator(
+def get_iban_validator(
     number: str = Query(...),
     service: IBANService = Depends(IBANService),
 ):
@@ -32,10 +33,11 @@ def simple_iban_validator(
 @router.post(
     "/iban/validate",
     tags=["iban"],
+    summary="POST-based validator",
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": IBANValidationFailureResponseV1}},
 )
-def simple_iban_validator(
+def post_iban_validator(
     req: IBANValidationRequestV1,
     service: IBANService = Depends(IBANService),
 ):

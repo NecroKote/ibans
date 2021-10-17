@@ -65,3 +65,35 @@ or use `Makefile`'s target:
 
 Ideally, this service should be placed behind a proxy server, configured to cache responses
 with respect to query parameters
+
+# Examples
+
+## GET interface
+```
+% curl "localhost:8000/v1/iban/is_valid?number=EE382200221020145685"
+
+{"is_valid": true}
+```
+
+```
+% curl "localhost:8000/v1/iban/is_valid?number=EE38%202200%202210%202014%20XXXX"
+
+{"is_valid": false}
+```
+
+## POST interface
+
+```
+% curl "localhost:8000/v1/iban/validate" -X POST -H 'Content-Type: application/json' -d '{"number": "EE38 2200 2210 2014 5685"}' -i
+
+HTTP/1.1 204
+...
+```
+
+```
+% curl "localhost:8000/v1/iban/validate" -X POST -H 'Content-Type: application/json' -d '{"number": "EE38 2200 2210 2014 XXXX"}' -i
+
+HTTP/1.1 400
+...
+{"detail":"IBAN check digits mismatch"}
+```

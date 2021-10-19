@@ -19,6 +19,11 @@ class CountryLookupError(LookupError):
 
 
 class IBANValidationError(ValueError):
+    """
+    raise when IBAN validation failed.
+    countains input number in `iban` and `reason` of failure
+    """
+
     def __init__(self, iban: str, reason: str):
         self.iban = iban
         self.reason = reason
@@ -30,10 +35,17 @@ class IBANValidationError(ValueError):
 class IBANService:
     """service, responsible for validation of IBAN"""
 
-    def _normalize_number(self, inp: str) -> str:
-        """normalizes input string by removing all whitespaces and converting to uppercase"""
+    _iban_alphabet_lookup = {
+        char.upper(): (10 + idx) for idx, char in enumerate(ascii_lowercase)
+    }
+    _iban_checksum_modulo = 97
+    _iban_min_length = 4
+    _iban_max_length = 34
 
-        return re.sub(r"\s", "", inp)
+    def _normalize_string(self, string: str) -> str:
+        """normalizes input string by removing all whitespaces and converting it to uppercase"""
+
+        return re.sub(r"\s", "", string).upper()
 
     def _validate_iban_checksum(self, iban: str) -> bool:
         """performs checksum validation of a normalized IBAN"""
@@ -42,65 +54,66 @@ class IBANService:
         number = iban[4:] + iban[:4]
 
         # 2. convert letters to digits
-        alphabet = {c.upper(): (10 + i) for i, c in enumerate(ascii_lowercase)}
         dest = ""
-        for c in number:
-            if c.isnumeric():
-                dest += c
+        for char in number:
+            if char.isnumeric():
+                dest += char
             else:
-                dest += str(alphabet[c])
+                dest += str(self._iban_alphabet_lookup[char])
+        iban_integer = int(dest)
 
-        # 3. interpret as an integer and check remainder
-        return int(dest) % 97 == 1
+        # 3. check remainder
+        return iban_integer % self._iban_checksum_modulo == 1
 
-    def _validate_iban_basic(self, inp: str):
+    def _validate_iban_basic(self, iban: str):
         """performs checksum validation of an input IBAN"""
 
         # validate input length
-        inp_len = len(inp)
-        if inp_len < 4:
+        iban_len = len(iban)
+        if iban_len < self._iban_min_length:
             raise IBANValidationError(
-                inp, "input should have at least country code and a check sum"
+                iban, "input should have at least country code and a check sum"
             )
 
-        elif inp_len > 34:
+        elif iban_len > self._iban_max_length:
             raise IBANValidationError(
-                inp, "valid IBAN must have no more that 34 characters"
+                iban,
+                f"valid IBAN must have no more that {self._iban_max_length} characters",
             )
 
-        elif not inp.isalnum():
-            raise IBANValidationError(inp, "IBAN contains non alpha-numerical symbols")
+        # valiate input consists only from alpha-numerical characters
+        elif not iban.isalnum():
+            raise IBANValidationError(iban, "IBAN contains non alpha-numerical symbols")
 
-        # validate country
-        country_a2 = inp[:2].upper()
+        country_code = iban[:2].upper()
 
         # lookup code rules
-        country_rules = lookup_rules_by_iso3166a2(country_a2)
+        country_rules = lookup_rules_by_iso3166a2(country_code)
         if country_rules is None:
-            raise CountryLookupError(country_a2)
+            raise CountryLookupError(country_code)
 
         # validate according to country rules (at least - BBAN length)
         try:
-            country_rules.validate(inp)
+            country_rules.validate(iban)
         except ValidationError as e:
             raise IBANValidationError(e.value, f"{e.cause}")
 
         # now goes IBAN checksum
-        if not self._validate_iban_checksum(inp):
-            raise IBANValidationError(inp, "IBAN check digits mismatch")
+        if not self._validate_iban_checksum(iban):
+            raise IBANValidationError(iban, "IBAN check digits mismatch")
 
-    def validate_iban(self, inp: str):
-        """validates input string to be a valid IBAN number. raises `ValueError` and `CountryLookupError`"""
+    def validate_iban(self, iban: str):
+        """validates input string to be a valid IBAN number. raises `IBANValidationError` and `CountryLookupError`"""
 
-        inp = self._normalize_number(inp)
-        return self._validate_iban_basic(inp)
+        iban_normalized = self._normalize_string(iban)
+        return self._validate_iban_basic(iban_normalized)
 
-    def is_valid_iban(self, inp: str) -> bool:
+    def is_valid_iban(self, iban: str) -> bool:
         """return `True` if input is a valid IBAN number"""
 
-        inp = self._normalize_number(inp)
+        iban_normalized = self._normalize_string(iban)
         try:
-            self._validate_iban_basic(inp)
+            self._validate_iban_basic(iban_normalized)
         except (IBANValidationError, CountryLookupError):
             return False
 

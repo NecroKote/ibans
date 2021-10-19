@@ -42,6 +42,7 @@ def post_iban_validator(
     service: IBANService = Depends(IBANService),
 ):
     """validates provided IBAN. returns validation error description, if any"""
+
     try:
         service.validate_iban(req.number)
 

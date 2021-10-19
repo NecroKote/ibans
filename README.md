@@ -11,7 +11,8 @@ As an example of possible architecture expansion, Albania (AL) and Hungary (HU) 
 # Installation
 `python` of version `3.7` and above is required for this project.
 
-Additionally, tool called `poetry` is required for noth dependency installation and running this project
+Additionally, tool called `poetry` is required for both dependency installation and running this project.
+(poetry needs to be run from project's directory)
 
 ```
 % pip install --user poetry

@@ -148,11 +148,11 @@ _iso3166a2_rule_set = {
 }
 
 
-def lookup_rules_by_iso3166a2(alpha_2: str) -> Optional[BasicIBANRules]:
+def lookup_rules_by_iso3166a2(country_code: str) -> Optional[BasicIBANRules]:
     """return `BasicIBANRules` for a given country by it's ISO 3166 alpha-2 code"""
 
-    alpha_2 = alpha_2.strip().upper()
-    if len(alpha_2) != 2:
-        raise ValueError("`alpha_2` should contain excatly 2 characters")
+    country_code = country_code.strip().upper()
+    if len(country_code) != 2:
+        raise ValueError("`country_code` should contain excatly 2 characters")
 
-    return _iso3166a2_rule_set.get(alpha_2)
+    return _iso3166a2_rule_set.get(country_code)

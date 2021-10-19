@@ -28,22 +28,28 @@ class WeightedSumValidationRule:
         self.reminder_transformer = reminder_transformer
 
     def __call__(self, value: str):
-        check_target = self.get_src(value)
-        if not check_target.isnumeric():
+        # extract the region of interest from `value`
+        check_string = self.get_src(value)
+
+        # extract "check digit" from `value`
+        check_digit = self.get_check(value)
+
+        if not check_string.isnumeric():
             raise ValueError("non-digit input within checked region")
 
-        numbers = (int(x) for x in check_target)
+        numbers = (int(x) for x in check_string)
 
-        # weighted sum
+        # calculate the weighted sum
         cs = sum(a * b for a, b in zip(numbers, self.weights))
-        # modulo
         cs = cs % self.modulo
+
+        # transform the checksum, if necessery
         cs_ready, cs = self.reminder_transformer(cs)
 
-        # compliment
+        # use "compliment" if result if not already prepared by transformer
         if not cs_ready and self.comliment:
             cs = self.comliment - cs
 
-        check_value = int(self.get_check(value))
-        if cs != check_value:
-            raise ValueError(f"Weigted sum digit mismatch ({cs} != {check_value})")
+        # compare the two
+        if str(cs) != check_digit:
+            raise ValueError(f"Weigted sum digit mismatch ({cs} != {check_digit})")
